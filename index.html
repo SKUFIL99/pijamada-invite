@@ -15,7 +15,8 @@
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
-  <link rel="stylesheet" href="css/styles.css" />
+  <!-- ✅ RUTAS CORREGIDAS: sin subcarpetas para GitHub Pages -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
@@ -91,6 +92,9 @@
 
 <!-- ════════════════════════════════════════ -->
 <!--  PANTALLA 3 – PREGUNTAS INTERACTIVAS   -->
+<!--  Pasos: 0=Comida 1=Película 2=Snacks   -->
+<!--          3=Hora de recogida 4=Música    -->
+<!--          5=Mensaje                      -->
 <!-- ════════════════════════════════════════ -->
 <div id="screen-form" class="screen">
 
@@ -101,19 +105,8 @@
 
   <div class="form-container">
 
-    <!-- Paso 0: Nombre -->
+    <!-- Paso 0: Comida -->
     <div class="form-step active" id="step-0">
-      <div class="step-emoji">👋</div>
-      <h2 class="step-title">Primero lo primero…</h2>
-      <p class="step-sub">¿Cómo te llamas? (Para personalizar tu experiencia de pijamada™)</p>
-      <div class="input-wrap">
-        <input type="text" class="fancy-input" id="input-name" placeholder="Tu nombre aquí ✨" maxlength="30" autocomplete="off" />
-      </div>
-      <button class="btn-next" onclick="nextStep(0)">Siguiente <span>→</span></button>
-    </div>
-
-    <!-- Paso 1: Comida -->
-    <div class="form-step" id="step-1">
       <div class="step-emoji">🍕</div>
       <h2 class="step-title">¿Qué vamos a comer?</h2>
       <p class="step-sub">No juzgo. Bueno, un poquito sí 👀</p>
@@ -122,25 +115,23 @@
         <button class="chip" onclick="toggleChip(this,'food')">Sushi 🍣</button>
         <button class="chip" onclick="toggleChip(this,'food')">Tacos 🌮</button>
         <button class="chip" onclick="toggleChip(this,'food')">Hamburguesas 🍔</button>
-        <button class="chip" onclick="toggleChip(this,'food')">Ramen 🍜</button>
         <button class="chip" onclick="toggleChip(this,'food')">Nuggets 🍗</button>
         <button class="chip" onclick="toggleChip(this,'food')">Todo lo anterior 😤</button>
       </div>
       <div class="input-wrap" style="margin-top:1rem">
         <input type="text" class="fancy-input" id="input-food-extra" placeholder="O escribe algo diferente…" autocomplete="off" />
       </div>
-      <button class="btn-next" onclick="nextStep(1)">Siguiente <span>→</span></button>
+      <button class="btn-next" onclick="nextStep(0)">Siguiente <span>→</span></button>
     </div>
 
-    <!-- Paso 2: Película -->
-    <div class="form-step" id="step-2">
+    <!-- Paso 1: Película (sin Terror) -->
+    <div class="form-step" id="step-1">
       <div class="step-emoji">🎬</div>
       <h2 class="step-title">¿Qué película vemos?</h2>
-      <p class="step-sub">Advertencia: si eliges terror luego no te quejes 👻</p>
+      <p class="step-sub">Elige bien, que luego no hay queja 😌</p>
       <div class="chips-group" id="chips-movie">
         <button class="chip" onclick="toggleChip(this,'movie')">Romance 💕</button>
         <button class="chip" onclick="toggleChip(this,'movie')">Comedia 😂</button>
-        <button class="chip" onclick="toggleChip(this,'movie')">Terror 😱</button>
         <button class="chip" onclick="toggleChip(this,'movie')">Animación 🎨</button>
         <button class="chip" onclick="toggleChip(this,'movie')">Acción 💥</button>
         <button class="chip" onclick="toggleChip(this,'movie')">Lo que sea 🎲</button>
@@ -148,11 +139,11 @@
       <div class="input-wrap" style="margin-top:1rem">
         <input type="text" class="fancy-input" id="input-movie-extra" placeholder="O di el título exacto…" autocomplete="off" />
       </div>
-      <button class="btn-next" onclick="nextStep(2)">Siguiente <span>→</span></button>
+      <button class="btn-next" onclick="nextStep(1)">Siguiente <span>→</span></button>
     </div>
 
-    <!-- Paso 3: Snacks -->
-    <div class="form-step" id="step-3">
+    <!-- Paso 2: Snacks -->
+    <div class="form-step" id="step-2">
       <div class="step-emoji">🍿</div>
       <h2 class="step-title">¿Qué snacks compramos?</h2>
       <p class="step-sub">Esta es la parte más seria de toda la planeación</p>
@@ -168,29 +159,29 @@
       <div class="input-wrap" style="margin-top:1rem">
         <input type="text" class="fancy-input" id="input-snack-extra" placeholder="¿Algún capricho especial?…" autocomplete="off" />
       </div>
-      <button class="btn-next" onclick="nextStep(3)">Siguiente <span>→</span></button>
+      <button class="btn-next" onclick="nextStep(2)">Siguiente <span>→</span></button>
     </div>
 
-    <!-- Paso 4: Hora -->
-    <div class="form-step" id="step-4">
-      <div class="step-emoji">🕐</div>
-      <h2 class="step-title">¿A qué hora llegas?</h2>
-      <p class="step-sub">Calcula el tiempo de peinarte incluido jeje</p>
+    <!-- Paso 3: ¿A qué hora paso por ti? -->
+    <div class="form-step" id="step-3">
+      <div class="step-emoji">🚗</div>
+      <h2 class="step-title">¿A qué hora paso por ti?</h2>
+      <p class="step-sub">Cuéntame para organizarme bien 💖</p>
       <div class="chips-group" id="chips-time">
         <button class="chip" onclick="toggleChip(this,'time')">5 PM 🌆</button>
         <button class="chip" onclick="toggleChip(this,'time')">6 PM 🌇</button>
         <button class="chip" onclick="toggleChip(this,'time')">7 PM 🌃</button>
         <button class="chip" onclick="toggleChip(this,'time')">8 PM 🌉</button>
-        <button class="chip" onclick="toggleChip(this,'time')">Ya fui 🏃‍♀️</button>
+        <button class="chip" onclick="toggleChip(this,'time')">Ya voy en camino 🏃‍♀️</button>
       </div>
       <div class="input-wrap" style="margin-top:1rem">
         <input type="text" class="fancy-input" id="input-time-extra" placeholder="O dime exactamente cuándo…" autocomplete="off" />
       </div>
-      <button class="btn-next" onclick="nextStep(4)">Siguiente <span>→</span></button>
+      <button class="btn-next" onclick="nextStep(3)">Siguiente <span>→</span></button>
     </div>
 
-    <!-- Paso 5: Playlist / Música -->
-    <div class="form-step" id="step-5">
+    <!-- Paso 4: Playlist / Música -->
+    <div class="form-step" id="step-4">
       <div class="step-emoji">🎵</div>
       <h2 class="step-title">Playlist de la pijamada 🎶</h2>
       <p class="step-sub">¿Qué vibe musical quieres que tenga nuestra noche?</p>
@@ -206,11 +197,11 @@
       <div class="input-wrap" style="margin-top:1rem">
         <input type="text" class="fancy-input" id="input-music-extra" placeholder="Link de tu playlist favorita…" autocomplete="off" />
       </div>
-      <button class="btn-next" onclick="nextStep(5)">Siguiente <span>→</span></button>
+      <button class="btn-next" onclick="nextStep(4)">Siguiente <span>→</span></button>
     </div>
 
-    <!-- Paso 6: Mensaje especial -->
-    <div class="form-step" id="step-6">
+    <!-- Paso 5: Mensaje especial -->
+    <div class="form-step" id="step-5">
       <div class="step-emoji">💌</div>
       <h2 class="step-title">¿Algo más que quieras decir?</h2>
       <p class="step-sub">Quejas, peticiones, ideas locas… todo vale</p>
@@ -232,7 +223,8 @@
 <div id="screen-end" class="screen">
   <div class="end-inner">
     <div class="end-emoji">🌙✨</div>
-    <h1 class="end-title">¡Todo listo, <span id="end-name">amiga</span>!</h1>
+    <!-- ✅ Cambiado "amiga" por "guapa" -->
+    <h1 class="end-title">¡Todo listo, <span id="end-name">guapa</span>!</h1>
     <p class="end-sub">Tus respuestas llegaron safe & sound 📨<br>Pronto te mando los detalles finales 🥰</p>
 
     <div class="end-summary" id="end-summary">
@@ -261,16 +253,9 @@
 <!-- ════════════════════════════════════════ -->
 <div id="hearts-container"></div>
 
-<!-- Audio (usando Web Audio API para tonos simples) -->
-<audio id="bg-music" loop preload="none">
-  <!--
-    📌 OPCIONAL: Reemplaza esta URL con un link a tu canción favorita.
-    Puedes usar un archivo local o un CDN público.
-    Por ahora usamos silencio para no bloquear el sitio.
-  -->
-  <!-- <source src="music/bg.mp3" type="audio/mpeg"> -->
-</audio>
+<audio id="bg-music" loop preload="none"></audio>
 
-<script src="js/app.js"></script>
+<!-- ✅ RUTA CORREGIDA: sin subcarpeta js/ -->
+<script src="app.js"></script>
 </body>
 </html>

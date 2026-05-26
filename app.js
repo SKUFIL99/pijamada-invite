@@ -1,38 +1,20 @@
 /* ══════════════════════════════════════════════════
    PIJAMADA INVITE — app.js
-   Vanilla JS puro. Sin dependencias extra.
    ══════════════════════════════════════════════════ */
 
-/* ──────────────────────────────────────────────────
-   ⚙️  CONFIGURACIÓN — EDITA AQUÍ ANTES DE PUBLICAR
-   ────────────────────────────────────────────────── */
 const CONFIG = {
-  // 📌 Fecha y hora de la pijamada (ISO string) — CAMBIA ESTO
-  // Ejemplo: "2025-08-15T20:00:00" para el 15 de agosto a las 8 PM
   pijamaDate: "2026-05-29T19:00:00",
-
-  // 📌 Formspree — PASOS PARA CONFIGURAR (FREE):
-  //   1. Ve a https://formspree.io  y crea una cuenta gratuita.
-  //   2. Haz clic en "+ New Form", ponle un nombre (ej: "Pijamada").
-  //   3. Copia el endpoint que te dan (luce así: https://formspree.io/f/xabc1234)
-  //   4. Pégalo abajo en lugar de la URL que está ahí.
-  //   5. Guarda y listo. Cada vez que ella envíe el form, te llegará un e-mail.
-  formspreeURL: "https://formspree.io/f/mqejgabq", // ← REEMPLAZA ESTO
-
-  // 📌 Tu nombre (aparece en el form como remitente)
+  formspreeURL: "https://formspree.io/f/mqejgabq",
   senderName: "Javier",
-
-  // ✅ Si quieres el countdown activo en la pantalla final
   showCountdown: true,
 };
-/* ─────────────────────────────────────────────── */
 
 /* ══════════════════════════════════════════════════
    ESTADO GLOBAL
    ══════════════════════════════════════════════════ */
 let state = {
   currentStep: 0,
-  totalSteps: 7,   // 0-6
+  totalSteps: 6,   // pasos 0-5
   noAttempts: 0,
   muted: false,
   chips: { food: [], movie: [], snack: [], time: [], music: [] },
@@ -82,15 +64,15 @@ const tips = [
 function transition(fromId, toId) {
   const from = document.getElementById(fromId);
   const to   = document.getElementById(toId);
-  from.style.opacity = "1";
+  from.style.opacity   = "1";
   from.style.transition = "opacity .5s";
-  from.style.opacity = "0";
+  from.style.opacity   = "0";
   setTimeout(() => {
     from.classList.remove("active");
-    from.style.opacity = "";
+    from.style.opacity   = "";
     from.style.transition = "";
     to.classList.add("active");
-    to.style.opacity = "0";
+    to.style.opacity   = "0";
     to.style.transition = "opacity .5s";
     requestAnimationFrame(() => { to.style.opacity = "1"; });
     setTimeout(() => { to.style.transition = ""; }, 520);
@@ -98,11 +80,10 @@ function transition(fromId, toId) {
 }
 
 function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
-
 function rand(a, b) { return a + Math.random() * (b - a); }
 
 /* ══════════════════════════════════════════════════
-   PANTALLA 1 — BOTÓN "NO" QUE ESCAPA (mobile-safe)
+   PANTALLA 1 — BOTÓN "NO" QUE ESCAPA
    ══════════════════════════════════════════════════ */
 const noTexts = [
   ["No", "😒"],
@@ -118,7 +99,7 @@ const noTexts = [
 ];
 
 let noBtn, noTextEl, noEmojiEl;
-const EDGE = 14; // margen mínimo de borde en px
+const EDGE = 14;
 
 function initQuestionScreen() {
   noBtn     = document.getElementById("btn-no");
@@ -127,13 +108,10 @@ function initQuestionScreen() {
 
   createBubbles();
 
-  // Posición inicial: junto al btn-yes, calculada en porcentaje
-  // para que funcione en cualquier pantalla
   setTimeout(() => {
     const yes  = document.getElementById("btn-yes").getBoundingClientRect();
     const btnW = noBtn.offsetWidth  || 130;
     const btnH = noBtn.offsetHeight || 52;
-    // Intentar poner a la derecha del Sí; si no cabe, ir abajo
     let nx = yes.right + 12;
     let ny = yes.top;
     if (nx + btnW > window.innerWidth - EDGE) {
@@ -144,14 +122,10 @@ function initQuestionScreen() {
                 clamp(ny, EDGE + 50, window.innerHeight - btnH - EDGE));
   }, 150);
 
-  // MOUSE — escapar cuando el cursor se acerca (desktop)
   document.addEventListener("mousemove", onMouseNear);
-
-  // TOUCH — escapar cuando intenta tocarlo (mobile)
   noBtn.addEventListener("touchstart", onNoTouch, { passive: false });
 }
 
-/** Mueve el botón No a coordenadas (px) de forma segura */
 function setNoBtnPos(x, y) {
   const btnW = noBtn.offsetWidth  || 130;
   const btnH = noBtn.offsetHeight || 52;
@@ -176,39 +150,30 @@ function onNoTouch(e) {
 function escapeNoBtn() {
   state.noAttempts++;
 
-  // Badge contador
   const badge = document.getElementById("attempt-badge");
   badge.style.display = "block";
   document.getElementById("attempt-count").textContent = state.noAttempts;
 
-  // Cambiar texto del botón
   const pair = noTexts[Math.min(state.noAttempts, noTexts.length - 1)];
   noTextEl.textContent  = pair[0];
   noEmojiEl.textContent = pair[1];
 
-  // Dimensiones actuales del botón
   const btnW = noBtn.offsetWidth  || 130;
   const btnH = noBtn.offsetHeight || 52;
-
-  // Zona segura total
   const maxX = window.innerWidth  - btnW - EDGE;
   const maxY = window.innerHeight - btnH - EDGE;
-  const minY = EDGE + 50; // dejar espacio a la barra de status del móvil
+  const minY = EDGE + 50;
 
-  // Calcular nueva posición LEJOS de la posición actual
   const cur = noBtn.getBoundingClientRect();
   let nx, ny, attempts = 0;
   do {
     nx = rand(EDGE, maxX);
     ny = rand(minY, maxY);
     attempts++;
-    // Asegurar que se aleje al menos 80px del punto actual
   } while (Math.hypot(nx - cur.left, ny - cur.top) < 80 && attempts < 20);
 
-  // Aplicar posición segura
   setNoBtnPos(nx, ny);
 
-  // Efectos visuales extra
   let transform = "";
   if (state.noAttempts % 3 === 0) {
     transform = `rotate(${rand(-25, 25).toFixed(1)}deg)`;
@@ -218,15 +183,13 @@ function escapeNoBtn() {
   }
   noBtn.style.transform = transform;
 
-  // Animación shake
   noBtn.classList.remove("shaking");
   void noBtn.offsetWidth;
   noBtn.classList.add("shaking");
 
-  // Easter eggs por cantidad de intentos
   const hint = document.getElementById("hint-text");
   if (state.noAttempts === 5)  hint.textContent = "El botón No tiene vida propia… 👀";
-  if (state.noAttempts === 10) hint.textContent = "Bro… ¡de verdad que no va a funcionar! 😭";
+  if (state.noAttempts === 10) hint.textContent = "¡De verdad que no va a funcionar! 😭";
   if (state.noAttempts === 15) hint.textContent = "Ya rendiste? Solo presiona Sí 💖";
 }
 
@@ -249,7 +212,6 @@ function handleYes() {
   const msg = yesMessages[Math.floor(Math.random() * yesMessages.length)];
   setTimeout(() => { document.getElementById("yes-title").textContent = msg; }, 800);
 
-  // Avanzar a preguntas tras 3.2s
   setTimeout(() => {
     transition("screen-yes", "screen-form");
     updateProgress();
@@ -260,13 +222,12 @@ function handleYes() {
    FORMULARIO — navegación entre pasos
    ══════════════════════════════════════════════════ */
 function nextStep(stepIndex) {
-  // Guardar respuesta del paso actual
   collectAnswer(stepIndex);
 
   const current = document.getElementById(`step-${stepIndex}`);
   const next    = document.getElementById(`step-${stepIndex + 1}`);
 
-  if (!next) return; // ya estamos en submit
+  if (!next) return;
 
   current.classList.add("leaving");
   setTimeout(() => {
@@ -274,7 +235,6 @@ function nextStep(stepIndex) {
     next.classList.add("active");
     state.currentStep = stepIndex + 1;
     updateProgress();
-    // Scroll al top del form
     document.getElementById("screen-form").scrollTo({ top: 0, behavior: "smooth" });
   }, 350);
 }
@@ -298,28 +258,26 @@ function toggleChip(btn, category) {
 
 /* ══════════════════════════════════════════════════
    RECOPILAR RESPUESTAS
+   Pasos: 0=food 1=movie 2=snack 3=time 4=music 5=message
    ══════════════════════════════════════════════════ */
 function collectAnswer(step) {
   switch (step) {
     case 0:
-      state.answers.name = document.getElementById("input-name").value.trim() || "Anónima";
-      break;
-    case 1:
       state.answers.food = combine(state.chips.food, document.getElementById("input-food-extra").value);
       break;
-    case 2:
+    case 1:
       state.answers.movie = combine(state.chips.movie, document.getElementById("input-movie-extra").value);
       break;
-    case 3:
+    case 2:
       state.answers.snack = combine(state.chips.snack, document.getElementById("input-snack-extra").value);
       break;
-    case 4:
+    case 3:
       state.answers.time = combine(state.chips.time, document.getElementById("input-time-extra").value);
       break;
-    case 5:
+    case 4:
       state.answers.music = combine(state.chips.music, document.getElementById("input-music-extra").value);
       break;
-    case 6:
+    case 5:
       state.answers.message = document.getElementById("input-message").value.trim();
       break;
   }
@@ -343,18 +301,18 @@ document.getElementById("input-message").addEventListener("input", function () {
    SUBMIT — ENVIAR A FORMSPREE
    ══════════════════════════════════════════════════ */
 async function submitForm() {
-  collectAnswer(6); // recopilar el último paso
+  collectAnswer(5);
 
   const btn = document.getElementById("submit-btn");
   btn.textContent = "Enviando… 🚀";
   btn.disabled = true;
 
   const payload = {
-    nombre:    state.answers.name,
+    nombre:    "Jessica",
     comida:    state.answers.food,
     pelicula:  state.answers.movie,
     snacks:    state.answers.snack,
-    hora:      state.answers.time,
+    hora_de_recogida: state.answers.time,
     musica:    state.answers.music,
     mensaje:   state.answers.message,
     intentos_de_no: state.noAttempts,
@@ -363,7 +321,6 @@ async function submitForm() {
 
   try {
     if (CONFIG.formspreeURL.includes("XXXXXXXX")) {
-      // Modo demo — salta directamente a la pantalla final
       console.log("📋 Respuestas (modo demo):", payload);
       showEndScreen();
     } else {
@@ -380,7 +337,6 @@ async function submitForm() {
     }
   } catch (err) {
     console.error("Error enviando:", err);
-    // Aunque falle el envío, continuamos para no arruinar la experiencia
     showEndScreen();
   }
 }
@@ -393,29 +349,25 @@ function showEndScreen() {
   fireConfetti();
   transition("screen-form", "screen-end");
 
-  // Nombre personalizado
-  const name = state.answers.name || "amiga";
-  document.getElementById("end-name").textContent = name;
+  // ✅ Nombre fijo: Jessica
+  document.getElementById("end-name").textContent = "guapa";
 
-  // Resumen
   const summary = document.getElementById("end-summary");
   const items = [
-    { label: "🍕 Comida:",    val: state.answers.food    },
-    { label: "🎬 Película:",  val: state.answers.movie   },
-    { label: "🍿 Snacks:",    val: state.answers.snack   },
-    { label: "🕐 Hora:",      val: state.answers.time    },
-    { label: "🎵 Música:",    val: state.answers.music   },
-    { label: "💌 Mensaje:",   val: state.answers.message },
+    { label: "🍕 Comida:",           val: state.answers.food    },
+    { label: "🎬 Película:",         val: state.answers.movie   },
+    { label: "🍿 Snacks:",           val: state.answers.snack   },
+    { label: "🚗 Paso por ti a las:", val: state.answers.time   },
+    { label: "🎵 Música:",           val: state.answers.music   },
+    { label: "💌 Mensaje:",          val: state.answers.message },
   ];
   summary.innerHTML = items
     .filter(i => i.val && i.val !== "Sin respuesta")
     .map(i => `<div class="summary-item"><span class="summary-label">${i.label}</span><span class="summary-val">${i.val}</span></div>`)
     .join("");
 
-  // Countdown
   if (CONFIG.showCountdown) startCountdown(CONFIG.pijamaDate);
 
-  // Lluvia continua de corazones en la pantalla final
   setInterval(() => spawnHearts(3), 1200);
 }
 
@@ -509,7 +461,7 @@ function fireConfetti() {
 }
 
 /* ══════════════════════════════════════════════════
-   AUDIO — Web Audio API (chime sencillo sin archivo)
+   AUDIO — Web Audio API
    ══════════════════════════════════════════════════ */
 let audioCtx = null;
 
@@ -522,13 +474,13 @@ function playChime() {
   if (state.muted) return;
   try {
     const ctx  = getAudioCtx();
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5-E5-G5-C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((freq, i) => {
       const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.type      = "sine";
+      osc.type = "sine";
       osc.frequency.value = freq;
       const t = ctx.currentTime + i * 0.18;
       gain.gain.setValueAtTime(0, t);
@@ -537,7 +489,7 @@ function playChime() {
       osc.start(t);
       osc.stop(t + .65);
     });
-  } catch(e) { /* silencio si el usuario no interactuó aún */ }
+  } catch(e) {}
 }
 
 function playPop() {
@@ -586,9 +538,7 @@ document.addEventListener("keydown", e => {
   } else { konamiIdx = 0; }
 });
 
-/* ══════════════════════════════════════════════════
-   PREVENIR SCROLL ACCIDENTAL en mobile con btn No
-   ══════════════════════════════════════════════════ */
+/* Prevenir scroll accidental en mobile con btn No */
 document.addEventListener("touchmove", e => {
   if (e.target === noBtn) e.preventDefault();
 }, { passive: false });
