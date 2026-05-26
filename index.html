@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ff6b9d" />
+  <title>Una pregunta importante 🥺</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥺</text></svg>" />
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ════════════════════════════════════════ -->
+<!--  PANTALLA 0 – FAKE LOADING             -->
+<!-- ════════════════════════════════════════ -->
+<div id="screen-loading" class="screen active">
+  <div class="loading-inner">
+    <div class="loading-logo">🌙</div>
+    <div class="loading-title">Cargando algo importante…</div>
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+    <div class="loading-tip" id="loading-tip">Inicializando ternura…</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  PANTALLA 1 – LA PREGUNTA PRINCIPAL    -->
+<!-- ════════════════════════════════════════ -->
+<div id="screen-question" class="screen">
+
+  <!-- Fondo animado con burbujas -->
+  <div class="bubbles" id="bubbles"></div>
+
+  <!-- Botón mute/unmute flotante -->
+  <button class="mute-btn" id="mute-btn" title="Toggle music">🔊</button>
+
+  <div class="question-card">
+    <div class="emoji-float">🥺</div>
+    <h1 class="main-title">¿Quieres venir a una<br><span class="highlight">pijamada</span> conmigo?</h1>
+    <p class="subtitle">Una noche épica nos espera… probablemente 🎉</p>
+
+    <div class="buttons-wrap">
+      <!-- Botón SÍ -->
+      <button class="btn btn-yes" id="btn-yes" onclick="handleYes()">
+        <span class="btn-emoji">💖</span>
+        <span>¡Sí!</span>
+      </button>
+
+      <!-- Botón NO (escapa) -->
+      <button class="btn btn-no" id="btn-no">
+        <span class="btn-emoji" id="no-emoji">😒</span>
+        <span id="no-text">No</span>
+      </button>
+    </div>
+
+    <p class="hint-text" id="hint-text">Sólo hay una respuesta correcta aquí 👀</p>
+  </div>
+
+  <!-- Contador de intentos del NO -->
+  <div class="attempt-badge" id="attempt-badge" style="display:none;">
+    Intentos fallidos: <span id="attempt-count">0</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  PANTALLA 2 – TRANSICIÓN "SÍ"          -->
+<!-- ════════════════════════════════════════ -->
+<div id="screen-yes" class="screen">
+  <div class="yes-inner">
+    <div class="yes-big-emoji" id="yes-emoji-anim">💖</div>
+    <h2 class="yes-title" id="yes-title">Sabía que aceptarías 😌</h2>
+    <div class="achievement-box" id="achievement">
+      <span class="ach-icon">🏆</span>
+      <div>
+        <div class="ach-label">LOGRO DESBLOQUEADO</div>
+        <div class="ach-name">Pijamada DLC</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  PANTALLA 3 – PREGUNTAS INTERACTIVAS   -->
+<!-- ════════════════════════════════════════ -->
+<div id="screen-form" class="screen">
+
+  <!-- Barra de progreso -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div class="form-container">
+
+    <!-- Paso 0: Nombre -->
+    <div class="form-step active" id="step-0">
+      <div class="step-emoji">👋</div>
+      <h2 class="step-title">Primero lo primero…</h2>
+      <p class="step-sub">¿Cómo te llamas? (Para personalizar tu experiencia de pijamada™)</p>
+      <div class="input-wrap">
+        <input type="text" class="fancy-input" id="input-name" placeholder="Tu nombre aquí ✨" maxlength="30" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(0)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 1: Comida -->
+    <div class="form-step" id="step-1">
+      <div class="step-emoji">🍕</div>
+      <h2 class="step-title">¿Qué vamos a comer?</h2>
+      <p class="step-sub">No juzgo. Bueno, un poquito sí 👀</p>
+      <div class="chips-group" id="chips-food">
+        <button class="chip" onclick="toggleChip(this,'food')">Pizza 🍕</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Sushi 🍣</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Tacos 🌮</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Hamburguesas 🍔</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Ramen 🍜</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Nuggets 🍗</button>
+        <button class="chip" onclick="toggleChip(this,'food')">Todo lo anterior 😤</button>
+      </div>
+      <div class="input-wrap" style="margin-top:1rem">
+        <input type="text" class="fancy-input" id="input-food-extra" placeholder="O escribe algo diferente…" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(1)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 2: Película -->
+    <div class="form-step" id="step-2">
+      <div class="step-emoji">🎬</div>
+      <h2 class="step-title">¿Qué película vemos?</h2>
+      <p class="step-sub">Advertencia: si eliges terror luego no te quejes 👻</p>
+      <div class="chips-group" id="chips-movie">
+        <button class="chip" onclick="toggleChip(this,'movie')">Romance 💕</button>
+        <button class="chip" onclick="toggleChip(this,'movie')">Comedia 😂</button>
+        <button class="chip" onclick="toggleChip(this,'movie')">Terror 😱</button>
+        <button class="chip" onclick="toggleChip(this,'movie')">Animación 🎨</button>
+        <button class="chip" onclick="toggleChip(this,'movie')">Acción 💥</button>
+        <button class="chip" onclick="toggleChip(this,'movie')">Lo que sea 🎲</button>
+      </div>
+      <div class="input-wrap" style="margin-top:1rem">
+        <input type="text" class="fancy-input" id="input-movie-extra" placeholder="O di el título exacto…" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(2)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 3: Snacks -->
+    <div class="form-step" id="step-3">
+      <div class="step-emoji">🍿</div>
+      <h2 class="step-title">¿Qué snacks compramos?</h2>
+      <p class="step-sub">Esta es la parte más seria de toda la planeación</p>
+      <div class="chips-group" id="chips-snack">
+        <button class="chip" onclick="toggleChip(this,'snack')">Palomitas 🍿</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">Gummies 🐻</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">Chocolates 🍫</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">Papas 🥔</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">Helado 🍦</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">Nachos 🧀</button>
+        <button class="chip" onclick="toggleChip(this,'snack')">TODO lo anterior 🛒</button>
+      </div>
+      <div class="input-wrap" style="margin-top:1rem">
+        <input type="text" class="fancy-input" id="input-snack-extra" placeholder="¿Algún capricho especial?…" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(3)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 4: Hora -->
+    <div class="form-step" id="step-4">
+      <div class="step-emoji">🕐</div>
+      <h2 class="step-title">¿A qué hora llegas?</h2>
+      <p class="step-sub">Calcula el tiempo de peinarte incluido jeje</p>
+      <div class="chips-group" id="chips-time">
+        <button class="chip" onclick="toggleChip(this,'time')">5 PM 🌆</button>
+        <button class="chip" onclick="toggleChip(this,'time')">6 PM 🌇</button>
+        <button class="chip" onclick="toggleChip(this,'time')">7 PM 🌃</button>
+        <button class="chip" onclick="toggleChip(this,'time')">8 PM 🌉</button>
+        <button class="chip" onclick="toggleChip(this,'time')">Ya fui 🏃‍♀️</button>
+      </div>
+      <div class="input-wrap" style="margin-top:1rem">
+        <input type="text" class="fancy-input" id="input-time-extra" placeholder="O dime exactamente cuándo…" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(4)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 5: Playlist / Música -->
+    <div class="form-step" id="step-5">
+      <div class="step-emoji">🎵</div>
+      <h2 class="step-title">Playlist de la pijamada 🎶</h2>
+      <p class="step-sub">¿Qué vibe musical quieres que tenga nuestra noche?</p>
+      <div class="chips-group" id="chips-music">
+        <button class="chip" onclick="toggleChip(this,'music')">Pop 🌸</button>
+        <button class="chip" onclick="toggleChip(this,'music')">Reggaetón 🔥</button>
+        <button class="chip" onclick="toggleChip(this,'music')">K-pop 🎤</button>
+        <button class="chip" onclick="toggleChip(this,'music')">Lo-fi 🌙</button>
+        <button class="chip" onclick="toggleChip(this,'music')">80s Vibes 📼</button>
+        <button class="chip" onclick="toggleChip(this,'music')">TikTok hits 📱</button>
+        <button class="chip" onclick="toggleChip(this,'music')">Sorpréndeme 🎲</button>
+      </div>
+      <div class="input-wrap" style="margin-top:1rem">
+        <input type="text" class="fancy-input" id="input-music-extra" placeholder="Link de tu playlist favorita…" autocomplete="off" />
+      </div>
+      <button class="btn-next" onclick="nextStep(5)">Siguiente <span>→</span></button>
+    </div>
+
+    <!-- Paso 6: Mensaje especial -->
+    <div class="form-step" id="step-6">
+      <div class="step-emoji">💌</div>
+      <h2 class="step-title">¿Algo más que quieras decir?</h2>
+      <p class="step-sub">Quejas, peticiones, ideas locas… todo vale</p>
+      <div class="input-wrap">
+        <textarea class="fancy-input fancy-textarea" id="input-message" placeholder="Escribe lo que quieras… ✍️" maxlength="300"></textarea>
+      </div>
+      <div class="char-count"><span id="char-left">300</span> caracteres restantes</div>
+      <button class="btn-next btn-submit" id="submit-btn" onclick="submitForm()">
+        <span>¡Enviar respuestas! 🚀</span>
+      </button>
+    </div>
+
+  </div><!-- /form-container -->
+</div><!-- /screen-form -->
+
+<!-- ════════════════════════════════════════ -->
+<!--  PANTALLA 4 – FIN / CONFIRMACIÓN       -->
+<!-- ════════════════════════════════════════ -->
+<div id="screen-end" class="screen">
+  <div class="end-inner">
+    <div class="end-emoji">🌙✨</div>
+    <h1 class="end-title">¡Todo listo, <span id="end-name">amiga</span>!</h1>
+    <p class="end-sub">Tus respuestas llegaron safe & sound 📨<br>Pronto te mando los detalles finales 🥰</p>
+
+    <div class="end-summary" id="end-summary">
+      <!-- Se rellena con JS -->
+    </div>
+
+    <div class="end-countdown">
+      <p class="countdown-label">La pijamada empieza en…</p>
+      <div class="countdown-boxes">
+        <div class="count-box"><span id="cd-days">00</span><small>días</small></div>
+        <div class="count-sep">:</div>
+        <div class="count-box"><span id="cd-hours">00</span><small>hrs</small></div>
+        <div class="count-sep">:</div>
+        <div class="count-box"><span id="cd-mins">00</span><small>min</small></div>
+        <div class="count-sep">:</div>
+        <div class="count-box"><span id="cd-secs">00</span><small>seg</small></div>
+      </div>
+    </div>
+
+    <p class="end-footer">Hecho con 💖 especialmente para ti</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  LLUVIA DE CORAZONES                   -->
+<!-- ════════════════════════════════════════ -->
+<div id="hearts-container"></div>
+
+<!-- Audio (usando Web Audio API para tonos simples) -->
+<audio id="bg-music" loop preload="none">
+  <!--
+    📌 OPCIONAL: Reemplaza esta URL con un link a tu canción favorita.
+    Puedes usar un archivo local o un CDN público.
+    Por ahora usamos silencio para no bloquear el sitio.
+  -->
+  <!-- <source src="music/bg.mp3" type="audio/mpeg"> -->
+</audio>
+
+<script src="js/app.js"></script>
+</body>
+</html>
